@@ -47,6 +47,6 @@ Toute utilisation, reproduction, diffusion, commercialisation, modification de t
 
 Pour toute question ou réclamation concernant le site ou ses contenus, vous pouvez contacter :
 
-**Adresse e-mail**: Réservation via le formulaire AMMA du site.
+**Adresse e-mail**: [agos-gra.amma@inria.fr](mailto:agos-gra.amma@inria.fr)
 
-**Adresse postale**: Inria, Domaine de Voluceau, Rocquencourt - B.P. 105, 78153 Le Chesnay Cedex - France.
+**Adresse postale**: Inria, 655 Av. de l'Europe, 38330 Montbonnot-Saint-Martin.
