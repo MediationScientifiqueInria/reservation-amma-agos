@@ -8,10 +8,9 @@ description: Retrouvez toutes les mentions légales du site de réservation AMMA
 ## 1. Éditeur du site
 
 L'édition du site "**Réservations AMMA**" est assurée par Inria, dont le siège social est situé au Domaine de Voluceau, Rocquencourt - B.P. 105, 78153 Le Chesnay Cedex - France.
-Création du site: Inria
-Administration du site: Inria
-> - **Création du site**: Inria
-> - **Administration du site**: Inria
+Création du site: 
+> - **Création du site**: Inria - service Médiation Scientifique
+> - **Administration du site**: Inria - service Médiation Scientifique
 
 ## 2. Hébergement du site
 
