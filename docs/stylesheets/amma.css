@@ -1,0 +1,172 @@
+/* Réservations AMMA */
+
+.amma-intro {
+  max-width: 760px;
+  margin-bottom: 1.5rem;
+}
+
+.amma-note,
+.amma-privacy {
+  font-size: 0.88rem;
+  opacity: 0.78;
+}
+
+.amma-demo-banner {
+  border: 1px solid currentColor;
+  border-radius: 0.45rem;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.amma-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.amma-day {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 0.7rem;
+  padding: 1rem;
+}
+
+.amma-day h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+  text-transform: capitalize;
+}
+
+.amma-slots {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.amma-slot {
+  width: 100%;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font: inherit;
+  cursor: pointer;
+  background: transparent;
+}
+
+.amma-slot.is-free:hover,
+.amma-slot.is-free:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.amma-slot.is-booked {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.amma-slot-time {
+  font-weight: 600;
+}
+
+.amma-slot-status {
+  font-weight: 700;
+}
+
+.amma-dialog {
+  width: min(92vw, 480px);
+  border: 0;
+  border-radius: 0.8rem;
+  padding: 1.5rem;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+}
+
+.amma-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.amma-dialog form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.amma-dialog h2 {
+  margin: 0 2rem 0.5rem 0;
+}
+
+.amma-dialog input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 0.4rem;
+  font: inherit;
+}
+
+.amma-dialog-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.8rem;
+  border: 0;
+  background: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.amma-selected-slot {
+  font-weight: 700;
+}
+
+.amma-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.amma-primary,
+.amma-secondary {
+  border-radius: 0.45rem;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.amma-primary {
+  border: 1px solid currentColor;
+}
+
+.amma-secondary {
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: transparent;
+}
+
+.amma-form-message,
+.amma-error {
+  font-weight: 600;
+}
+
+.amma-confirmation {
+  border: 1px solid currentColor;
+  border-radius: 0.7rem;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .amma-days {
+    grid-template-columns: 1fr;
+  }
+
+  .amma-dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .amma-dialog-actions button {
+    width: 100%;
+  }
+}

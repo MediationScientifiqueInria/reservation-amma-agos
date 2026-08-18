@@ -1,0 +1,57 @@
+site_name: Réservations AMMA - Inria
+
+
+theme:
+  font:
+    text: InriaSans-Regular
+
+  logo: assets/spa-solid.png
+  favicon: assets/spa-solid.ico
+  name: material
+  custom_dir: src/overrides
+  palette:
+    primary: custom
+    accent: custom
+
+  language: fr
+
+  features:
+    #- navigation.path
+    - navigation.indexes
+    #- navigation.top
+    #- navigation.footer
+    #- toc.integrate
+    #- navigation.tabs
+    #- navigation.tabs.sticky
+    - navigation.sections
+
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/amma.css
+extra_javascript:
+  - javascripts/extra.js
+  - javascripts/amma.js
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - def_list
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - md_in_html
+  - attr_list
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+
+plugins:
+    - mkdocs-video
+    - awesome-pages
+    - glightbox
+    - table-reader
+    # - search # necessary for search to work
