@@ -263,12 +263,14 @@ document.getElementById("amma-booking-form")?.addEventListener("submit", async (
 function showRequestConfirmation() {
   const box = document.getElementById("amma-confirmation");
   const text = document.getElementById("amma-confirmation-text");
+  const cancelNote = document.getElementById("amma-cancel-note");
   const link = document.getElementById("amma-cancel-link");
   const emailStatus = document.getElementById("amma-email-status");
 
   text.textContent =
     "Un lien de confirmation vient d’être envoyé. Le créneau sera réservé uniquement après clic sur ce lien.";
   emailStatus.textContent = "Pensez à vérifier vos indésirables si l’e-mail n’arrive pas.";
+  cancelNote.hidden = true;
   link.textContent = "";
   link.removeAttribute("href");
 
@@ -279,6 +281,7 @@ function showRequestConfirmation() {
 function showConfirmation(slot, token) {
   const box = document.getElementById("amma-confirmation");
   const text = document.getElementById("amma-confirmation-text");
+  const cancelNote = document.getElementById("amma-cancel-note");
   const link = document.getElementById("amma-cancel-link");
   const emailStatus = document.getElementById("amma-email-status");
 
@@ -289,10 +292,12 @@ function showConfirmation(slot, token) {
   let cancelUrl = "";
 
   if (AMMA_DEMO_MODE) {
+    cancelNote.hidden = true;
     link.textContent = "Lien d’annulation disponible une fois Supabase configuré.";
     link.removeAttribute("href");
     emailStatus.textContent = "";
   } else {
+    cancelNote.hidden = false;
     cancelUrl = buildCancellationUrl(token);
     link.href = cancelUrl;
     link.textContent = cancelUrl;
@@ -423,11 +428,13 @@ function buildCancellationUrl(token) {
 function setConfirmationStatus(message) {
   const box = document.getElementById("amma-confirmation");
   const text = document.getElementById("amma-confirmation-text");
+  const cancelNote = document.getElementById("amma-cancel-note");
   const link = document.getElementById("amma-cancel-link");
   const emailStatus = document.getElementById("amma-email-status");
 
   text.textContent = message;
   emailStatus.textContent = "";
+  cancelNote.hidden = true;
   link.textContent = "";
   link.removeAttribute("href");
   box.hidden = false;

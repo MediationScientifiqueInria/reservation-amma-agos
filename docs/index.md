@@ -66,7 +66,7 @@ hide:
 <div id="amma-confirmation" class="amma-confirmation" hidden>
   <h2>Suivi de réservation</h2>
   <p id="amma-confirmation-text"></p>
-  <p>
+  <p id="amma-cancel-note" hidden>
     <strong>Important :</strong> Conservez le lien d’annulation affiché ci-dessous si vous souhaitez libérer votre créneau.
   </p>
   <p id="amma-email-status" class="amma-email-status" aria-live="polite"></p>
