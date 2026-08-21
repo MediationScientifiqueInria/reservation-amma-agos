@@ -1,8 +1,8 @@
-# Massages AMMA — 2026
+# Massages AMMA Inria Grenoble — 2026
 
 <div class="amma-intro">
   <p>
-    Choisis un créneau marqué <strong>Libre</strong>. Une fois réservé,
+    Choisissez un créneau marqué <strong>Libre</strong>. Une fois réservé,
     il devient immédiatement indisponible pour les autres personnes.
   </p>
   <p class="amma-note">
@@ -38,7 +38,7 @@
     >
 
     <p class="amma-privacy">
-      Ces informations sont utilisées uniquement pour gérer ton rendez-vous AMMA.
+      Ces informations sont utilisées uniquement pour gérer vos rendez-vous AMMA.
     </p>
 
     <div class="amma-dialog-actions">
@@ -54,8 +54,8 @@
   <h2>Créneau réservé ✓</h2>
   <p id="amma-confirmation-text"></p>
   <p>
-    <strong>Important :</strong> conserve le lien d’annulation affiché ci-dessous
-    si tu veux libérer ton créneau plus tard.
+    <strong>Important :</strong> conservez le lien d’annulation affiché ci-dessous
+    si vous souhaitez libérer votre créneau.
   </p>
   <p>
     <a id="amma-cancel-link" href="#"></a>
