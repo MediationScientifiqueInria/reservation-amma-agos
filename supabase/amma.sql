@@ -31,8 +31,12 @@ create table if not exists public.amma_bookings (
   lastname text not null,
   email text not null,
   cancellation_token uuid not null unique default gen_random_uuid(),
+  confirmation_email_sent_at timestamptz,
   created_at timestamptz not null default now()
 );
+
+alter table public.amma_bookings
+  add column if not exists confirmation_email_sent_at timestamptz;
 
 alter table public.amma_slots enable row level security;
 alter table public.amma_bookings enable row level security;

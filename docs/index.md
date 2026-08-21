@@ -67,6 +67,7 @@ hide:
   <p>
     <strong>Important :</strong> Conservez le lien d’annulation affiché ci-dessous si vous souhaitez libérer votre créneau.
   </p>
+  <p id="amma-email-status" class="amma-email-status" aria-live="polite"></p>
   <p>
     <a id="amma-cancel-link" href="#"></a>
   </p>

@@ -19,6 +19,7 @@ des fichiers CSS/JS personnalisés via `mkdocs.yml`.
 - Blocage atomique d'un créneau côté PostgreSQL
 - Aucun nom d'autre participant affiché
 - Un lien d'annulation individuel
+- Un e-mail automatique de confirmation via Supabase Edge Function + SMTP
 - Un mode démonstration sans backend tant que Supabase n'est pas configuré
 
 ## 1 — Copier les fichiers dans le dépôt
@@ -67,7 +68,47 @@ Ne jamais utiliser de clé `service_role` dans le navigateur.
 Dès que ces deux valeurs sont renseignées, le mode démonstration s'arrête
 automatiquement et la page utilise la vraie base de données.
 
-## 4 — Tester avant diffusion
+## 4 — Activer l'e-mail de confirmation Gmail
+
+La fonction Edge est dans :
+
+`supabase/functions/send-email/index.ts`
+
+Elle envoie l'e-mail après réservation en utilisant les secrets SMTP stockés
+côté Supabase. Ne jamais mettre le mot de passe d'application Gmail dans
+`docs/javascripts/amma.js`.
+
+Installer la CLI Supabase si besoin, puis depuis la racine du dépôt :
+
+```bash
+supabase login
+supabase link --project-ref muzyvmdswsccrvntgann
+```
+
+Ajouter les secrets. Remplacer l'adresse et le mot de passe par tes vraies
+valeurs :
+
+```bash
+supabase secrets set SMTP_HOST=smtp.gmail.com
+supabase secrets set SMTP_PORT=587
+supabase secrets set SMTP_SECURE=false
+supabase secrets set SMTP_USER=ton.email@gmail.com
+supabase secrets set SMTP_PASS=ton_mot_de_passe_application_google
+supabase secrets set SMTP_FROM=ton.email@gmail.com
+supabase secrets set SMTP_SENDER_NAME="AMMA Inria Grenoble"
+```
+
+Déployer la fonction :
+
+```bash
+supabase functions deploy send-email --no-verify-jwt
+```
+
+Si le script SQL a déjà été exécuté avant l'ajout des e-mails, relancer
+`supabase/amma.sql` dans le SQL Editor. Il ajoutera notamment la colonne
+`confirmation_email_sent_at` sans supprimer les réservations existantes.
+
+## 5 — Tester avant diffusion
 
 À vérifier :
 
@@ -76,7 +117,8 @@ automatiquement et la page utilise la vraie base de données.
 3. Le second tente de réserver le même créneau : sa réservation est refusée.
 4. Le créneau apparaît désormais Réservé.
 5. Le lien d'annulation libère le créneau.
-6. Aucun nom ni e-mail n'est visible dans les outils réseau lors du chargement
+6. Un e-mail de confirmation arrive sur l'adresse utilisée.
+7. Aucun nom ni e-mail n'est visible dans les outils réseau lors du chargement
    de la liste des créneaux.
 
 ## Point RGPD

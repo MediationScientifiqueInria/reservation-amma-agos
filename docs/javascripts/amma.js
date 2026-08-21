@@ -254,7 +254,11 @@ document.getElementById("amma-booking-form")?.addEventListener("submit", async (
       renderSlots();
     }
 
-    showConfirmation(bookedSlot, cancellationToken);
+    const cancelUrl = showConfirmation(bookedSlot, cancellationToken);
+
+    if (!AMMA_DEMO_MODE) {
+      sendBookingEmail(cancellationToken, cancelUrl);
+    }
   } catch (error) {
     console.error(error);
 
@@ -276,23 +280,58 @@ function showConfirmation(slot, token) {
   const box = document.getElementById("amma-confirmation");
   const text = document.getElementById("amma-confirmation-text");
   const link = document.getElementById("amma-cancel-link");
+  const emailStatus = document.getElementById("amma-email-status");
 
   text.textContent =
     `Ton rendez-vous est réservé le ${formatDate(slot.session_date)} ` +
     `de ${shortTime(slot.start_time)} à ${shortTime(slot.end_time)}.`;
 
+  let cancelUrl = "";
+
   if (AMMA_DEMO_MODE) {
     link.textContent = "Lien d’annulation disponible une fois Supabase configuré.";
     link.removeAttribute("href");
+    emailStatus.textContent = "";
   } else {
-    const url = new URL(window.location.href);
-    url.searchParams.set("cancel", token);
-    link.href = url.toString();
-    link.textContent = url.toString();
+    cancelUrl = buildCancellationUrl(token);
+    link.href = cancelUrl;
+    link.textContent = cancelUrl;
+    emailStatus.textContent = "Envoi de l’e-mail de confirmation…";
   }
 
   box.hidden = false;
   box.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  return cancelUrl;
+}
+
+async function sendBookingEmail(cancellationToken, cancelUrl) {
+  const emailStatus = document.getElementById("amma-email-status");
+
+  try {
+    const { data, error } = await supabaseClient.functions.invoke("send-email", {
+      body: {
+        cancellationToken,
+        cancelUrl,
+      },
+    });
+
+    if (error) throw error;
+
+    emailStatus.textContent = data?.alreadySent
+      ? "L’e-mail de confirmation a déjà été envoyé."
+      : "Un e-mail de confirmation vient d’être envoyé.";
+  } catch (error) {
+    console.error(error);
+    emailStatus.textContent =
+      "Réservation enregistrée, mais l’e-mail de confirmation n’a pas pu être envoyé.";
+  }
+}
+
+function buildCancellationUrl(token) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("cancel", token);
+  return url.toString();
 }
 
 // Annulation par token présent dans l'URL.

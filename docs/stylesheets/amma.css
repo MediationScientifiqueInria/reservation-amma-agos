@@ -149,6 +149,11 @@
   font-weight: 600;
 }
 
+.amma-email-status {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .amma-confirmation {
   border: 1px solid currentColor;
   border-radius: 0.7rem;
