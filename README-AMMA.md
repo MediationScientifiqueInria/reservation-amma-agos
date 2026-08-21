@@ -7,7 +7,7 @@ des fichiers CSS/JS personnalisés via `mkdocs.yml`.
 
 ## Ce qui est déjà prêt
 
-- Une page `docs/amma/index.md`
+- Une page `docs/index.md`
 - Une interface adaptée mobile / ordinateur
 - Les 20 créneaux visibles dans l'Evento 2026 :
   - mardi 15 septembre
@@ -25,7 +25,7 @@ des fichiers CSS/JS personnalisés via `mkdocs.yml`.
 
 Copier :
 
-- `docs/amma/index.md`
+- `docs/index.md`
 - `docs/javascripts/amma.js`
 - `docs/stylesheets/amma.css`
 
