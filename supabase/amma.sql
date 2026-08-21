@@ -290,7 +290,9 @@ revoke all on function public.create_amma_booking_request(bigint, text, text, te
 revoke all on function public.confirm_amma_booking_request(uuid) from public;
 revoke all on function public.cancel_amma_booking(uuid) from public;
 
-grant execute on function public.book_amma_slot(bigint, text, text, text) to anon;
+-- book_amma_slot est conservée pour compatibilité interne, mais n'est plus
+-- exposée aux visiteurs. Les réservations publiques passent désormais par
+-- create_amma_booking_request puis confirm_amma_booking_request.
 grant execute on function public.create_amma_booking_request(bigint, text, text, text) to anon;
 grant execute on function public.confirm_amma_booking_request(uuid) to anon;
 grant execute on function public.cancel_amma_booking(uuid) to anon;

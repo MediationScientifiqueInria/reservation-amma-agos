@@ -121,7 +121,7 @@ async function sendRequestEmail(body: Record<string, unknown>) {
     from: formatFromAddress(),
     to: bookingRequest.email,
     bcc: getOptionalEnv("SMTP_BCC"),
-    subject: "Confirmez votre rendez-vous AMMA",
+    subject: "Validez votre demande de rendez-vous AMMA",
     text: buildRequestTextEmail(bookingRequest, confirmationUrl),
     html: buildRequestHtmlEmail(bookingRequest, confirmationUrl),
   });
@@ -186,7 +186,7 @@ async function sendBookingEmail(body: Record<string, unknown>) {
     from: formatFromAddress(),
     to: booking.email,
     bcc: getOptionalEnv("SMTP_BCC"),
-    subject: "Confirmation de votre rendez-vous AMMA",
+    subject: "Votre rendez-vous AMMA est réservé",
     text: buildTextEmail(booking, cancelUrl),
     html: buildHtmlEmail(booking, cancelUrl),
   });
@@ -279,7 +279,8 @@ function buildRequestTextEmail(bookingRequest: BookingRequestRow, confirmationUr
   return [
     `Bonjour ${bookingRequest.firstname},`,
     "",
-    "Pour confirmer votre rendez-vous AMMA, cliquez sur ce lien :",
+    "Votre rendez-vous AMMA n'est pas encore reserve.",
+    "Pour reserver ce creneau, cliquez sur ce lien :",
     confirmationUrl,
     "",
     `Date demandee : ${formatDate(slot.session_date)}`,
@@ -313,7 +314,8 @@ function buildRequestHtmlEmail(bookingRequest: BookingRequestRow, confirmationUr
   const slot = bookingRequest.amma_slots!;
   return `
     <p>Bonjour ${escapeHtml(bookingRequest.firstname)},</p>
-    <p>Pour confirmer votre rendez-vous AMMA, cliquez sur ce lien :</p>
+    <p>Votre rendez-vous AMMA n'est pas encore réservé.</p>
+    <p>Pour réserver ce créneau, cliquez sur ce lien :</p>
     <p><a href="${escapeHtml(confirmationUrl)}">${escapeHtml(confirmationUrl)}</a></p>
     <p>
       <strong>Date demandée :</strong> ${escapeHtml(formatDate(slot.session_date))}<br>

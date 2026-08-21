@@ -52,6 +52,8 @@ Le script crée :
 - `create_amma_booking_request(...)` : création d'un lien de confirmation
 - `confirm_amma_booking_request(...)` : réservation atomique au clic
 - `cancel_amma_booking(...)` : annulation sécurisée par token
+- `book_amma_slot(...)` : ancienne réservation directe, conservée mais non
+  exposée aux visiteurs
 
 La table contenant les noms et e-mails n'est pas lisible par les visiteurs.
 
