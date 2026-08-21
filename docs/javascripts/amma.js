@@ -283,7 +283,7 @@ function showConfirmation(slot, token) {
   const emailStatus = document.getElementById("amma-email-status");
 
   text.textContent =
-    `Ton rendez-vous est réservé le ${formatDate(slot.session_date)} ` +
+    `Votre rendez-vous est réservé le ${formatDate(slot.session_date)} ` +
     `de ${shortTime(slot.start_time)} à ${shortTime(slot.end_time)}.`;
 
   let cancelUrl = "";

@@ -92,6 +92,7 @@ Deno.serve(async (request) => {
     await transporter.sendMail({
       from: formatFromAddress(),
       to: booking.email,
+      bcc: getOptionalEnv("SMTP_BCC"),
       subject: "Confirmation de votre rendez-vous AMMA",
       text: buildTextEmail(booking, cancelUrl),
       html: buildHtmlEmail(booking, cancelUrl),
@@ -122,6 +123,10 @@ function requireEnv(name: string) {
   const value = Deno.env.get(name);
   if (!value) throw new Error(`Missing environment variable: ${name}`);
   return value;
+}
+
+function getOptionalEnv(name: string) {
+  return Deno.env.get(name)?.trim() || undefined;
 }
 
 function getSupabaseSecretKey() {

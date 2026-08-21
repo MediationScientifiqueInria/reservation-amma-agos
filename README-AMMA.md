@@ -96,7 +96,11 @@ supabase secrets set SMTP_USER=ton.email@gmail.com
 supabase secrets set SMTP_PASS=ton_mot_de_passe_application_google
 supabase secrets set SMTP_FROM=ton.email@gmail.com
 supabase secrets set SMTP_SENDER_NAME="AMMA Inria Grenoble"
+supabase secrets set SMTP_BCC=adresse.copie.cachee@example.com
 ```
+
+`SMTP_BCC` est optionnel. Il permet d'envoyer automatiquement chaque
+confirmation en copie cachée à une adresse interne.
 
 Déployer la fonction :
 
