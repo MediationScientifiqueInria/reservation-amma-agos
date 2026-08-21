@@ -14,7 +14,9 @@ hide:
     
     Choisissez un créneau marqué <strong>Libre</strong>. <br>
     
-    Un lien de confirmation vous sera envoyé par e-mail. Le créneau sera réservé après clic sur ce lien.
+    Un lien de confirmation vous sera envoyé par e-mail. <br>
+    
+    Le créneau sera réservé après clic sur ce lien.
   </p>
   <p class="amma-note">
     Les noms des personnes inscrites ne sont jamais affichés.
