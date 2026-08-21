@@ -1,13 +1,13 @@
 ---
 title: Mentions légales
-description: Retrouvez toutes les mentions légales du site de réservation AMMA d'Inria.
+description: Retrouvez toutes les mentions légales du site de réservation AMMA d'Inria Grenoble
 ---
 
 # Mentions légales
 
 ## 1. Éditeur du site
 
-L'édition du site "**Réservations AMMA**" est assurée par Inria, dont le siège social est situé au Domaine de Voluceau, Rocquencourt - B.P. 105, 78153 Le Chesnay Cedex - France.
+L'édition du site "**Réservations AMMA - Inria Grenoble**" est assurée par Inria, dont le siège social est situé au Domaine de Voluceau, Rocquencourt - B.P. 105, 78153 Le Chesnay Cedex - France.
 Création du site: 
 > - **Création du site**: Inria - service Médiation Scientifique
 > - **Administration du site**: Inria - service Médiation Scientifique
@@ -25,7 +25,7 @@ Création du site:
 
 ## 3. RGPD
 
-Le site de "**Réservations AMMA**" ne collecte aucune donnée personnelle à votre insu.
+Le site de "**Réservations AMMA - Inria Grenoble**" ne collecte aucune donnée personnelle à votre insu.
 
 Aucun formulaire, cookie ou autre outil de traçage n'est utilisé pour recueillir des informations personnelles ou comportementales sur ses utilisateurs.
 
