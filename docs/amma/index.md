@@ -2,6 +2,7 @@
 
 <div class="amma-intro">
   <p>
+    Ces massages ont lieu au centre Inria de Grenoble, à Montbonnot-Saint-Martin.
     Choisissez un créneau marqué <strong>Libre</strong>. </br>
     Une fois réservé, il devient immédiatement indisponible pour les autres personnes.
   </p>
