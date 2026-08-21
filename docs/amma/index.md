@@ -2,7 +2,7 @@
 
 <div class="amma-intro">
   <p>
-    Choisissez un créneau marqué <strong>Libre</strong>. 
+    Choisissez un créneau marqué <strong>Libre</strong>. </br>
     Une fois réservé, il devient immédiatement indisponible pour les autres personnes.
   </p>
   <p class="amma-note">
