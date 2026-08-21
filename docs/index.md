@@ -10,8 +10,10 @@ hide:
 
 <div class="amma-intro">
   <p>
-    Ces massages ont lieu au centre Inria de Grenoble, à Montbonnot-Saint-Martin. </br>
-    Choisissez un créneau marqué <strong>Libre</strong>. </br>
+    Ces massages ont lieu au centre Inria de Grenoble, à Montbonnot-Saint-Martin.
+    
+    Choisissez un créneau marqué <strong>Libre</strong>.
+    
     Une fois réservé, il devient immédiatement indisponible pour les autres personnes.
   </p>
   <p class="amma-note">
@@ -63,8 +65,7 @@ hide:
   <h2>Créneau réservé ✓</h2>
   <p id="amma-confirmation-text"></p>
   <p>
-    <strong>Important :</strong> conservez le lien d’annulation affiché ci-dessous
-    si vous souhaitez libérer votre créneau.
+    <strong>Important :</strong> Conservez le lien d’annulation affiché ci-dessous si vous souhaitez libérer votre créneau.
   </p>
   <p>
     <a id="amma-cancel-link" href="#"></a>
