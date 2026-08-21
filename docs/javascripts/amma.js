@@ -260,8 +260,8 @@ document.getElementById("amma-booking-form")?.addEventListener("submit", async (
 
     if (error.message === "slot_taken") {
       message.textContent =
-        "Désolée, ce créneau vient d’être réservé par quelqu’un d’autre. " +
-        "Choisis-en un autre.";
+        "Ce créneau vient d’être réservé par quelqu’un d’autre. " +
+        "Choisissez-en un autre.";
       if (!AMMA_DEMO_MODE) await refreshSlots();
     } else {
       message.textContent =
@@ -307,7 +307,7 @@ function showConfirmation(slot, token) {
     }
 
     const confirmed = window.confirm(
-      "Veux-tu vraiment annuler ta réservation AMMA et libérer ce créneau ?"
+      "Voulez-vous vraiment annuler votre réservation AMMA et libérer ce créneau ?"
     );
     if (!confirmed) return;
 
@@ -321,7 +321,7 @@ function showConfirmation(slot, token) {
     url.searchParams.delete("cancel");
     window.history.replaceState({}, "", url);
 
-    alert(data ? "Ton créneau a bien été libéré." : "Cette réservation n’existe plus.");
+    alert(data ? "Votre créneau a bien été libéré." : "Cette réservation n’existe plus.");
     await refreshSlots();
   } catch (error) {
     console.error(error);
