@@ -165,13 +165,13 @@ function buildHtmlEmail(booking: BookingRow, cancelUrl: string) {
   const slot = booking.amma_slots!;
   return `
     <p>Bonjour ${escapeHtml(booking.firstname)},</p>
-    <p>Votre rendez-vous AMMA est confirme.</p>
+    <p>Votre rendez-vous AMMA est confirmé.</p>
     <p>
       <strong>Date :</strong> ${escapeHtml(formatDate(slot.session_date))}<br>
       <strong>Horaire :</strong> ${escapeHtml(shortTime(slot.start_time))} - ${escapeHtml(shortTime(slot.end_time))}
     </p>
     <p>
-      Pour annuler votre reservation, utilisez ce lien :<br>
+      Pour annuler votre réservation, utilisez ce lien :<br>
       <a href="${escapeHtml(cancelUrl)}">${escapeHtml(cancelUrl)}</a>
     </p>
     <p>Merci.</p>
