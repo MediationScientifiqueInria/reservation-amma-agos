@@ -14,7 +14,7 @@ hide:
     
     Choisissez un créneau marqué <strong>Libre</strong>. <br>
     
-    Une fois réservé, il devient immédiatement indisponible pour les autres personnes.
+    Un lien de confirmation vous sera envoyé par e-mail. Le créneau sera réservé après clic sur ce lien.
   </p>
   <p class="amma-note">
     Les noms des personnes inscrites ne sont jamais affichés.
@@ -54,7 +54,7 @@ hide:
 
     <div class="amma-dialog-actions">
       <button type="button" class="amma-secondary" id="amma-cancel-booking">Annuler</button>
-      <button type="submit" class="amma-primary" id="amma-confirm-booking">Confirmer</button>
+      <button type="submit" class="amma-primary" id="amma-confirm-booking">Recevoir le lien</button>
     </div>
 
     <p id="amma-form-message" class="amma-form-message" aria-live="polite"></p>
@@ -62,7 +62,7 @@ hide:
 </dialog>
 
 <div id="amma-confirmation" class="amma-confirmation" hidden>
-  <h2>Créneau réservé ✓</h2>
+  <h2>Suivi de réservation</h2>
   <p id="amma-confirmation-text"></p>
   <p>
     <strong>Important :</strong> Conservez le lien d’annulation affiché ci-dessous si vous souhaitez libérer votre créneau.

@@ -214,51 +214,35 @@ document.getElementById("amma-booking-form")?.addEventListener("submit", async (
   }
 
   confirmButton.disabled = true;
-  message.textContent = "Réservation en cours…";
+  message.textContent = "Envoi du lien de confirmation…";
 
   try {
-    let cancellationToken;
-
     if (AMMA_DEMO_MODE) {
-      const localSlot = slots.find((s) => s.id === selectedSlot.id);
-      if (localSlot.booked) throw new Error("slot_taken");
-      localSlot.booked = true;
-      cancellationToken = "demo";
-    } else {
-      const { data, error } = await supabaseClient.rpc("book_amma_slot", {
-        p_slot_id: selectedSlot.id,
-        p_firstname: firstname,
-        p_lastname: lastname,
-        p_email: email,
-      });
+      closeBooking();
+      showRequestConfirmation();
+      return;
+    }
 
-      if (error) {
-        if (
-          error.message?.includes("slot_already_booked") ||
-          error.details?.includes("slot_already_booked")
-        ) {
-          throw new Error("slot_taken");
-        }
-        throw error;
+    const { data, error } = await supabaseClient.rpc("create_amma_booking_request", {
+      p_slot_id: selectedSlot.id,
+      p_firstname: firstname,
+      p_lastname: lastname,
+      p_email: email,
+    });
+
+    if (error) {
+      if (
+        error.message?.includes("slot_already_booked") ||
+        error.details?.includes("slot_already_booked")
+      ) {
+        throw new Error("slot_taken");
       }
-
-      cancellationToken = data;
+      throw error;
     }
 
-    const bookedSlot = { ...selectedSlot };
+    await sendRequestEmail(data, buildBookingConfirmationUrl(data));
     closeBooking();
-
-    if (!AMMA_DEMO_MODE) {
-      await refreshSlots();
-    } else {
-      renderSlots();
-    }
-
-    const cancelUrl = showConfirmation(bookedSlot, cancellationToken);
-
-    if (!AMMA_DEMO_MODE) {
-      sendBookingEmail(cancellationToken, cancelUrl);
-    }
+    showRequestConfirmation();
   } catch (error) {
     console.error(error);
 
@@ -269,12 +253,28 @@ document.getElementById("amma-booking-form")?.addEventListener("submit", async (
       if (!AMMA_DEMO_MODE) await refreshSlots();
     } else {
       message.textContent =
-        "La réservation n’a pas pu être enregistrée. Merci de réessayer.";
+        "Le lien de confirmation n’a pas pu être envoyé. Merci de réessayer.";
     }
   } finally {
     confirmButton.disabled = false;
   }
 });
+
+function showRequestConfirmation() {
+  const box = document.getElementById("amma-confirmation");
+  const text = document.getElementById("amma-confirmation-text");
+  const link = document.getElementById("amma-cancel-link");
+  const emailStatus = document.getElementById("amma-email-status");
+
+  text.textContent =
+    "Un lien de confirmation vient d’être envoyé. Le créneau sera réservé uniquement après clic sur ce lien.";
+  emailStatus.textContent = "Pensez à vérifier vos indésirables si l’e-mail n’arrive pas.";
+  link.textContent = "";
+  link.removeAttribute("href");
+
+  box.hidden = false;
+  box.scrollIntoView({ behavior: "smooth", block: "center" });
+}
 
 function showConfirmation(slot, token) {
   const box = document.getElementById("amma-confirmation");
@@ -311,6 +311,7 @@ async function sendBookingEmail(cancellationToken, cancelUrl) {
   try {
     const { data, error } = await supabaseClient.functions.invoke("send-email", {
       body: {
+        mode: "booking",
         cancellationToken,
         cancelUrl,
       },
@@ -328,10 +329,109 @@ async function sendBookingEmail(cancellationToken, cancelUrl) {
   }
 }
 
+async function sendRequestEmail(requestToken, confirmationUrl) {
+  const { error } = await supabaseClient.functions.invoke("send-email", {
+    body: {
+      mode: "request",
+      requestToken,
+      confirmationUrl,
+    },
+  });
+
+  if (error) throw error;
+}
+
+function buildBookingConfirmationUrl(token) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("cancel");
+  url.searchParams.set("confirm", token);
+  return url.toString();
+}
+
 function buildCancellationUrl(token) {
   const url = new URL(window.location.href);
+  url.searchParams.delete("confirm");
   url.searchParams.set("cancel", token);
   return url.toString();
+}
+
+// Confirmation par token présent dans l'URL.
+(async function handleBookingConfirmationLink() {
+  const token = new URLSearchParams(window.location.search).get("confirm");
+  if (!token || AMMA_DEMO_MODE) return;
+
+  try {
+    await loadSupabaseLibrary();
+    if (!supabaseClient) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    setConfirmationStatus("Confirmation de votre rendez-vous…");
+
+    const { data, error } = await supabaseClient.rpc("confirm_amma_booking_request", {
+      p_token: token,
+    });
+
+    if (error) {
+      if (
+        error.message?.includes("slot_already_booked") ||
+        error.details?.includes("slot_already_booked")
+      ) {
+        setConfirmationStatus(
+          "Ce créneau vient d’être réservé par quelqu’un d’autre. Merci d’en choisir un autre."
+        );
+        await refreshSlots();
+        return;
+      }
+
+      if (
+        error.message?.includes("request_expired") ||
+        error.details?.includes("request_expired")
+      ) {
+        setConfirmationStatus(
+          "Ce lien de confirmation a expiré. Merci de refaire une demande de réservation."
+        );
+        await refreshSlots();
+        return;
+      }
+
+      throw error;
+    }
+
+    const result = Array.isArray(data) ? data[0] : data;
+    const slot = {
+      session_date: result.session_date,
+      start_time: result.start_time,
+      end_time: result.end_time,
+    };
+    const cancellationToken = result.cancellation_token;
+    const cancelUrl = buildCancellationUrl(cancellationToken);
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("confirm");
+    window.history.replaceState({}, "", url);
+
+    await refreshSlots();
+    showConfirmation(slot, cancellationToken);
+    sendBookingEmail(cancellationToken, cancelUrl);
+  } catch (error) {
+    console.error(error);
+    setConfirmationStatus("Impossible de confirmer la réservation pour le moment.");
+  }
+})();
+
+function setConfirmationStatus(message) {
+  const box = document.getElementById("amma-confirmation");
+  const text = document.getElementById("amma-confirmation-text");
+  const link = document.getElementById("amma-cancel-link");
+  const emailStatus = document.getElementById("amma-email-status");
+
+  text.textContent = message;
+  emailStatus.textContent = "";
+  link.textContent = "";
+  link.removeAttribute("href");
+  box.hidden = false;
+  box.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 // Annulation par token présent dans l'URL.

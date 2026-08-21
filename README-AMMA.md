@@ -16,7 +16,8 @@ des fichiers CSS/JS personnalisés via `mkdocs.yml`.
   - mardi 8 décembre
 - Les états **Libre** et **Réservé**
 - Un formulaire prénom / nom / e-mail Inria
-- Blocage atomique d'un créneau côté PostgreSQL
+- Envoi d'un lien de confirmation avant réservation
+- Blocage atomique d'un créneau côté PostgreSQL au clic sur le lien
 - Aucun nom d'autre participant affiché
 - Un lien d'annulation individuel
 - Un e-mail automatique de confirmation via Supabase Edge Function + SMTP
@@ -46,8 +47,10 @@ Créer un projet Supabase, puis ouvrir **SQL Editor** et exécuter :
 Le script crée :
 
 - `amma_slots` : uniquement les dates/heures et le statut du créneau
+- `amma_booking_requests` : demandes en attente de confirmation par e-mail
 - `amma_bookings` : prénom, nom, e-mail et token d'annulation
-- `book_amma_slot(...)` : réservation atomique
+- `create_amma_booking_request(...)` : création d'un lien de confirmation
+- `confirm_amma_booking_request(...)` : réservation atomique au clic
 - `cancel_amma_booking(...)` : annulation sécurisée par token
 
 La table contenant les noms et e-mails n'est pas lisible par les visiteurs.
@@ -74,8 +77,9 @@ La fonction Edge est dans :
 
 `supabase/functions/send-email/index.ts`
 
-Elle envoie l'e-mail après réservation en utilisant les secrets SMTP stockés
-côté Supabase. Ne jamais mettre le mot de passe d'application Gmail dans
+Elle envoie le lien de confirmation, puis l'e-mail final après réservation, en
+utilisant les secrets SMTP stockés côté Supabase. Ne jamais mettre le mot de
+passe d'application Gmail dans
 `docs/javascripts/amma.js`.
 
 Installer la CLI Supabase si besoin, puis depuis la racine du dépôt :
@@ -109,20 +113,22 @@ supabase functions deploy send-email --no-verify-jwt
 ```
 
 Si le script SQL a déjà été exécuté avant l'ajout des e-mails, relancer
-`supabase/amma.sql` dans le SQL Editor. Il ajoutera notamment la colonne
-`confirmation_email_sent_at` sans supprimer les réservations existantes.
+`supabase/amma.sql` dans le SQL Editor. Il ajoutera notamment la table
+`amma_booking_requests` et les fonctions de confirmation sans supprimer les
+réservations existantes.
 
 ## 5 — Tester avant diffusion
 
 À vérifier :
 
 1. Deux navigateurs affichent le même créneau comme Libre.
-2. Le premier réserve.
-3. Le second tente de réserver le même créneau : sa réservation est refusée.
-4. Le créneau apparaît désormais Réservé.
-5. Le lien d'annulation libère le créneau.
-6. Un e-mail de confirmation arrive sur l'adresse utilisée.
-7. Aucun nom ni e-mail n'est visible dans les outils réseau lors du chargement
+2. Le premier demande le créneau et reçoit un lien de confirmation.
+3. Le créneau reste Libre tant que le lien n'a pas été cliqué.
+4. Le premier clique le lien : le créneau devient Réservé.
+5. Le second tente de confirmer le même créneau : sa réservation est refusée.
+6. Le lien d'annulation libère le créneau.
+7. Un e-mail de confirmation arrive sur l'adresse utilisée.
+8. Aucun nom ni e-mail n'est visible dans les outils réseau lors du chargement
    de la liste des créneaux.
 
 ## Point RGPD
