@@ -238,7 +238,60 @@
   font-weight: 700;
 }
 
-.amma-admin-actions {
+.amma-admin-panel {
+  margin: 1.5rem 0;
+}
+
+.amma-admin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.amma-admin-section-header h2 {
+  margin-bottom: 0.5rem;
+}
+
+.amma-admin-manage-link,
+.amma-admin-back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.amma-admin-session-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.7rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.amma-admin-session-form label:not(.amma-admin-checkbox) {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.amma-admin-date-input,
+.amma-admin-session-form input[type="date"] {
+  box-sizing: border-box;
+  min-width: 150px;
+  padding: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 0.4rem;
+  font: inherit;
+}
+
+.amma-admin-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.4rem;
+}
+
+.amma-admin-row-actions {
   display: flex;
   gap: 0.6rem;
 }
@@ -305,6 +358,10 @@
   opacity: 0.76;
 }
 
+.amma-admin-status.is-hidden {
+  opacity: 0.6;
+}
+
 .amma-admin-empty {
   font-weight: 600;
 }
@@ -334,12 +391,15 @@
     width: 100%;
   }
 
-  .amma-admin-actions {
+  .amma-admin-session-form,
+  .amma-admin-row-actions {
     flex-direction: column;
+    align-items: stretch;
     width: 100%;
   }
 
-  .amma-admin-actions button {
+  .amma-admin-session-form button,
+  .amma-admin-row-actions button {
     width: 100%;
   }
 }
