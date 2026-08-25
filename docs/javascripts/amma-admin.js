@@ -37,22 +37,32 @@ function bindAdminEvents() {
   document
     .getElementById("amma-admin-login-form")
     ?.addEventListener("submit", handleAdminLogin);
-  document
-    .getElementById("amma-admin-refresh")
-    ?.addEventListener("click", loadAdminReservations);
-  document
-    .getElementById("amma-admin-logout")
-    ?.addEventListener("click", handleAdminLogout);
 }
 
 function loadAdminSupabaseLibrary() {
+  if (window.loadAmmaSupabaseLibrary) {
+    return window.loadAmmaSupabaseLibrary();
+  }
+
   return new Promise((resolve, reject) => {
     if (window.supabase) {
       resolve();
       return;
     }
 
+    const existingScript = document.querySelector("script[data-amma-supabase]");
+    if (existingScript) {
+      existingScript.addEventListener("load", resolve, { once: true });
+      existingScript.addEventListener(
+        "error",
+        () => reject(new Error("Impossible de charger Supabase.")),
+        { once: true }
+      );
+      return;
+    }
+
     const script = document.createElement("script");
+    script.dataset.ammaSupabase = "true";
     script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
     script.onload = resolve;
     script.onerror = () => reject(new Error("Impossible de charger Supabase."));
@@ -78,6 +88,7 @@ async function handleAdminLogin(event) {
 
     if (error) throw error;
     await showDashboard(data.user.email);
+    window.refreshAmmaHeaderActions?.();
     form.reset();
   } catch (error) {
     console.error(error);
@@ -85,11 +96,6 @@ async function handleAdminLogin(event) {
   } finally {
     button.disabled = false;
   }
-}
-
-async function handleAdminLogout() {
-  await adminSupabaseClient.auth.signOut();
-  showLogin();
 }
 
 async function showDashboard(email) {
