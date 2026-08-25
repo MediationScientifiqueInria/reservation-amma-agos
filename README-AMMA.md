@@ -21,6 +21,8 @@ des fichiers CSS/JS personnalisés via `mkdocs.yml`.
 - Aucun nom d'autre participant affiché
 - Un lien d'annulation individuel
 - Un e-mail automatique de confirmation via Supabase Edge Function + SMTP
+- Une page d'administration `/admin/` pour consulter les créneaux et
+  réservations
 - Un mode démonstration sans backend tant que Supabase n'est pas configuré
 
 ## 1 — Copier les fichiers dans le dépôt
@@ -49,9 +51,11 @@ Le script crée :
 - `amma_slots` : uniquement les dates/heures et le statut du créneau
 - `amma_booking_requests` : demandes en attente de confirmation par e-mail
 - `amma_bookings` : prénom, nom, e-mail et token d'annulation
+- `amma_admins` : e-mails autorisés à consulter l'administration
 - `create_amma_booking_request(...)` : création d'un lien de confirmation
 - `confirm_amma_booking_request(...)` : réservation atomique au clic
 - `cancel_amma_booking(...)` : annulation sécurisée par token
+- `admin_list_amma_reservations(...)` : lecture admin des créneaux et réservations
 - `book_amma_slot(...)` : ancienne réservation directe, conservée mais non
   exposée aux visiteurs
 
@@ -119,7 +123,36 @@ Si le script SQL a déjà été exécuté avant l'ajout des e-mails, relancer
 `amma_booking_requests` et les fonctions de confirmation sans supprimer les
 réservations existantes.
 
-## 5 — Tester avant diffusion
+## 5 — Activer l'administration
+
+La page admin est disponible dans :
+
+`docs/admin/index.md`
+
+Elle est servie à l'adresse `/admin/`, mais les données nominatives ne sont
+renvoyées que pour les utilisateurs connectés et autorisés.
+
+Créer d'abord un utilisateur dans Supabase :
+
+`Authentication > Users > Add user`
+
+Puis autoriser son adresse e-mail dans le SQL Editor :
+
+```sql
+insert into public.amma_admins (email)
+values (lower('prenom.nom@inria.fr'))
+on conflict (email) do nothing;
+```
+
+La page admin affiche les créneaux, les réservations confirmées et le nombre de
+demandes en attente par créneau.
+
+Pour ajouter d'autres admins, répéter les deux étapes : créer/inviter le compte
+dans Supabase Auth, puis insérer son e-mail dans `amma_admins`.
+
+La modification des créneaux n'est pas encore disponible dans l'interface.
+
+## 6 — Tester avant diffusion
 
 À vérifier :
 
@@ -151,3 +184,7 @@ Les améliorations naturelles seraient :
 - création de nouvelles journées depuis l'interface
 - verrouillage à une réservation par adresse e-mail et par journée
 - purge automatique des données après chaque session
+- transformer `supabase/amma.sql` en migrations Supabase dans
+  `supabase/migrations/`
+- ajouter un flow d'invitation admin depuis `/admin/` avec validation explicite
+  par un admin existant

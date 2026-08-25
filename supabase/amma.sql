@@ -4,7 +4,8 @@
 -- Ce fichier configure uniquement le schéma PostgreSQL, les tables,
 -- les fonctions RPC et les droits Supabase.
 -- L'envoi des e-mails n'est pas géré ici : il est fait par l'Edge Function
--- supabase/functions/send-email/index.ts, avec les secrets SMTP Supabase.-- ==========================================================
+-- supabase/functions/send-email/index.ts, avec les secrets SMTP Supabase.
+-- ==========================================================
 -- Réservations AMMA — schéma Supabase
 -- ==========================================================
 -- À exécuter dans Supabase > SQL Editor.
@@ -57,9 +58,17 @@ create table if not exists public.amma_booking_requests (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.amma_admins (
+  email text primary key,
+  created_at timestamptz not null default now(),
+
+  constraint amma_admins_email_lowercase check (email = lower(email))
+);
+
 alter table public.amma_slots enable row level security;
 alter table public.amma_bookings enable row level security;
 alter table public.amma_booking_requests enable row level security;
+alter table public.amma_admins enable row level security;
 
 -- Le public ne voit que l'état des créneaux.
 drop policy if exists "Public can read AMMA slots" on public.amma_slots;
@@ -72,6 +81,10 @@ using (true);
 -- AUCUNE policy SELECT/INSERT/UPDATE/DELETE sur amma_bookings ni
 -- amma_booking_requests. Les tables contenant les noms/e-mails restent donc
 -- inaccessibles directement depuis le navigateur.
+
+-- AUCUNE policy SELECT/INSERT/UPDATE/DELETE sur amma_admins.
+-- AUCUNE policy SELECT/INSERT/UPDATE/DELETE sur amma_admins.
+-- Les autorisations admin passent par des fonctions security definer.
 
 create or replace function public.book_amma_slot(
   p_slot_id bigint,
@@ -285,10 +298,77 @@ begin
 end;
 $$;
 
+create or replace function public.is_amma_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+      from public.amma_admins
+     where email = lower(coalesce(auth.jwt() ->> 'email', ''))
+  );
+$$;
+
+create or replace function public.admin_list_amma_reservations()
+returns table (
+  slot_id bigint,
+  session_date date,
+  start_time time,
+  end_time time,
+  booked boolean,
+  booking_id bigint,
+  firstname text,
+  lastname text,
+  email text,
+  booked_at timestamptz,
+  confirmation_email_sent_at timestamptz,
+  pending_requests bigint
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_amma_admin() then
+    raise exception 'admin_access_required';
+  end if;
+
+  return query
+  select
+    s.id as slot_id,
+    s.session_date,
+    s.start_time,
+    s.end_time,
+    s.booked,
+    b.id as booking_id,
+    b.firstname,
+    b.lastname,
+    b.email,
+    b.created_at as booked_at,
+    b.confirmation_email_sent_at,
+    coalesce(r.pending_requests, 0) as pending_requests
+  from public.amma_slots s
+  left join public.amma_bookings b
+    on b.slot_id = s.id
+  left join lateral (
+    select count(*) as pending_requests
+      from public.amma_booking_requests br
+     where br.slot_id = s.id
+       and br.confirmed_at is null
+       and br.expires_at >= now()
+  ) r on true
+  order by s.session_date, s.start_time;
+end;
+$$;
+
 revoke all on function public.book_amma_slot(bigint, text, text, text) from public;
 revoke all on function public.create_amma_booking_request(bigint, text, text, text) from public;
 revoke all on function public.confirm_amma_booking_request(uuid) from public;
 revoke all on function public.cancel_amma_booking(uuid) from public;
+revoke all on function public.is_amma_admin() from public;
+revoke all on function public.admin_list_amma_reservations() from public;
 
 -- book_amma_slot est conservée pour compatibilité interne, mais n'est plus
 -- exposée aux visiteurs. Les réservations publiques passent désormais par
@@ -296,6 +376,8 @@ revoke all on function public.cancel_amma_booking(uuid) from public;
 grant execute on function public.create_amma_booking_request(bigint, text, text, text) to anon;
 grant execute on function public.confirm_amma_booking_request(uuid) to anon;
 grant execute on function public.cancel_amma_booking(uuid) to anon;
+grant execute on function public.is_amma_admin() to authenticated;
+grant execute on function public.admin_list_amma_reservations() to authenticated;
 
 -- ==========================================================
 -- Créneaux 2026 vus dans Evento
