@@ -21,6 +21,7 @@ des fichiers CSS/JS personnalisés via `mkdocs.yml`.
 - Aucun nom d'autre participant affiché
 - Un lien d'annulation individuel
 - Un e-mail automatique de confirmation via Supabase Edge Function + SMTP
+- Un e-mail automatique d'annulation, avec l'admin en copie
 - Une page d'administration `/admin/` pour consulter les créneaux et
   réservations
 - Un mode démonstration sans backend tant que Supabase n'est pas configuré
@@ -51,6 +52,7 @@ Le script crée :
 - `amma_slots` : uniquement les dates/heures et le statut du créneau
 - `amma_booking_requests` : demandes en attente de confirmation par e-mail
 - `amma_bookings` : prénom, nom, e-mail et token d'annulation
+- `amma_cancellations` : trace technique permettant l'e-mail d'annulation
 - `amma_admins` : e-mails autorisés à consulter l'administration
 - `create_amma_booking_request(...)` : création d'un lien de confirmation
 - `confirm_amma_booking_request(...)` : réservation atomique au clic
@@ -83,9 +85,10 @@ La fonction Edge est dans :
 
 `supabase/functions/send-email/index.ts`
 
-Elle envoie le lien de confirmation, puis l'e-mail final après réservation, en
-utilisant les secrets SMTP stockés côté Supabase. Ne jamais mettre le mot de
-passe d'application Gmail dans
+Elle envoie le lien de confirmation, l'e-mail final après réservation, puis
+l'e-mail d'annulation si une personne libère son créneau, en utilisant les
+secrets SMTP stockés côté Supabase. Ne jamais mettre le mot de passe
+d'application Gmail dans
 `docs/javascripts/amma.js`.
 
 Installer la CLI Supabase si besoin, puis depuis la racine du dépôt :
@@ -109,8 +112,8 @@ supabase secrets set SMTP_SENDER_NAME="AMMA Inria Grenoble"
 supabase secrets set SMTP_BCC=adresse.copie.cachee@example.com
 ```
 
-`SMTP_BCC` est optionnel. Il permet d'envoyer automatiquement chaque
-confirmation en copie cachée à une adresse interne.
+`SMTP_BCC` est optionnel. Il permet d'envoyer automatiquement les e-mails en
+copie cachée à une adresse interne, y compris pour les annulations.
 
 Déployer la fonction :
 
@@ -151,7 +154,4 @@ Pour ajouter d'autres admins, répéter les deux étapes : créer/inviter le com
 dans Supabase Auth, puis insérer son e-mail dans `amma_admins`.
 
 La modification des créneaux n'est pas encore disponible dans l'interface.
-
-
-
 

@@ -465,6 +465,19 @@ async function sendRequestEmail(requestToken, confirmationUrl) {
   if (error) throw error;
 }
 
+async function sendCancellationEmail(cancellationEmailToken) {
+  if (!cancellationEmailToken) return;
+
+  const { error } = await supabaseClient.functions.invoke("send-email", {
+    body: {
+      mode: "cancellation",
+      cancellationEmailToken,
+    },
+  });
+
+  if (error) throw error;
+}
+
 function buildBookingConfirmationUrl(token) {
   const url = new URL(window.location.href);
   url.searchParams.delete("cancel");
@@ -486,9 +499,7 @@ function buildCancellationUrl(token) {
 
   try {
     await loadSupabaseLibrary();
-    if (!supabaseClient) {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
+    getSupabaseClient();
 
     setConfirmationStatus("Confirmation de votre rendez-vous…");
 
@@ -567,9 +578,7 @@ function setConfirmationStatus(message) {
 
   try {
     await loadSupabaseLibrary();
-    if (!supabaseClient) {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
+    getSupabaseClient();
 
     const confirmed = window.confirm(
       "Voulez-vous vraiment annuler votre réservation AMMA et libérer ce créneau ?"
@@ -582,17 +591,45 @@ function setConfirmationStatus(message) {
 
     if (error) throw error;
 
+    const cancellation = normalizeCancellationResult(data);
+
     const url = new URL(window.location.href);
     url.searchParams.delete("cancel");
     window.history.replaceState({}, "", url);
 
-    alert(data ? "Votre créneau a bien été libéré." : "Cette réservation n’existe plus.");
+    if (!cancellation.cancelled) {
+      alert("Cette réservation n’existe plus.");
+      await refreshSlots();
+      return;
+    }
+
+    try {
+      await sendCancellationEmail(cancellation.cancellationEmailToken);
+      alert("Votre créneau a bien été libéré. Un e-mail d’annulation vient d’être envoyé.");
+    } catch (emailError) {
+      console.error(emailError);
+      alert("Votre créneau a bien été libéré, mais l’e-mail d’annulation n’a pas pu être envoyé.");
+    }
+
     await refreshSlots();
   } catch (error) {
     console.error(error);
     alert("Impossible d’annuler la réservation pour le moment.");
   }
 })();
+
+function normalizeCancellationResult(data) {
+  if (typeof data === "boolean") {
+    return { cancelled: data, cancellationEmailToken: null };
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+
+  return {
+    cancelled: Boolean(result?.cancelled),
+    cancellationEmailToken: result?.cancellation_email_token || null,
+  };
+}
 
 function groupBy(items, key) {
   return items.reduce((acc, item) => {

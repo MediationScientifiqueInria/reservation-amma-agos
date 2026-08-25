@@ -36,6 +36,17 @@ type BookingRequestRow = {
   } | null;
 };
 
+type CancellationRow = {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  session_date: string;
+  start_time: string;
+  end_time: string;
+  cancellation_email_sent_at: string | null;
+};
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -55,6 +66,10 @@ Deno.serve(async (request) => {
 
     if (mode === "booking") {
       return await sendBookingEmail(body);
+    }
+
+    if (mode === "cancellation") {
+      return await sendCancellationEmail(body);
     }
 
     return json({ error: "invalid_email_mode" }, 400);
@@ -201,6 +216,64 @@ async function sendBookingEmail(body: Record<string, unknown>) {
   return json({ ok: true });
 }
 
+async function sendCancellationEmail(body: Record<string, unknown>) {
+  const cancellationEmailToken = String(body.cancellationEmailToken || "").trim();
+
+  if (!isUuid(cancellationEmailToken)) {
+    return json({ error: "invalid_cancellation_email_token" }, 400);
+  }
+
+  const supabase = getSupabaseClient();
+
+  const { data, error: cancellationError } = await supabase
+    .from("amma_cancellations")
+    .select(
+      `
+        id,
+        firstname,
+        lastname,
+        email,
+        session_date,
+        start_time,
+        end_time,
+        cancellation_email_sent_at
+      `,
+    )
+    .eq("email_token", cancellationEmailToken)
+    .maybeSingle();
+
+  if (cancellationError) throw cancellationError;
+  const cancellation = data as CancellationRow | null;
+
+  if (!cancellation) {
+    return json({ error: "cancellation_not_found" }, 404);
+  }
+
+  if (cancellation.cancellation_email_sent_at) {
+    return json({ ok: true, alreadySent: true });
+  }
+
+  const transporter = createTransporter();
+
+  await transporter.sendMail({
+    from: formatFromAddress(),
+    to: cancellation.email,
+    bcc: getOptionalEnv("SMTP_BCC"),
+    subject: "Votre rendez-vous AMMA est annulé",
+    text: buildCancellationTextEmail(cancellation),
+    html: buildCancellationHtmlEmail(cancellation),
+  });
+
+  const { error: updateError } = await supabase
+    .from("amma_cancellations")
+    .update({ cancellation_email_sent_at: new Date().toISOString() })
+    .eq("id", cancellation.id);
+
+  if (updateError) throw updateError;
+
+  return json({ ok: true });
+}
+
 function json(payload: unknown, status = 200) {
   return Response.json(payload, {
     status,
@@ -293,6 +366,21 @@ function buildRequestTextEmail(bookingRequest: BookingRequestRow, confirmationUr
   ].join("\n");
 }
 
+function buildCancellationTextEmail(cancellation: CancellationRow) {
+  return [
+    `Bonjour ${cancellation.firstname},`,
+    "",
+    "Votre rendez-vous AMMA est annule.",
+    "",
+    `Date : ${formatDate(cancellation.session_date)}`,
+    `Horaire : ${shortTime(cancellation.start_time)} - ${shortTime(cancellation.end_time)}`,
+    "",
+    "Le creneau est de nouveau disponible.",
+    "",
+    "Merci.",
+  ].join("\n");
+}
+
 function buildHtmlEmail(booking: BookingRow, cancelUrl: string) {
   const slot = booking.amma_slots!;
   return `
@@ -306,6 +394,19 @@ function buildHtmlEmail(booking: BookingRow, cancelUrl: string) {
       Pour annuler votre réservation, utilisez ce lien :<br>
       <a href="${escapeHtml(cancelUrl)}">${escapeHtml(cancelUrl)}</a>
     </p>
+    <p>Merci.</p>
+  `;
+}
+
+function buildCancellationHtmlEmail(cancellation: CancellationRow) {
+  return `
+    <p>Bonjour ${escapeHtml(cancellation.firstname)},</p>
+    <p>Votre rendez-vous AMMA est annulé.</p>
+    <p>
+      <strong>Date :</strong> ${escapeHtml(formatDate(cancellation.session_date))}<br>
+      <strong>Horaire :</strong> ${escapeHtml(shortTime(cancellation.start_time))} - ${escapeHtml(shortTime(cancellation.end_time))}
+    </p>
+    <p>Le créneau est de nouveau disponible.</p>
     <p>Merci.</p>
   `;
 }
