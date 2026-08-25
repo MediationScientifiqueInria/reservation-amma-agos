@@ -70,19 +70,18 @@ alter table public.amma_bookings enable row level security;
 alter table public.amma_booking_requests enable row level security;
 alter table public.amma_admins enable row level security;
 
--- Le public ne voit que l'état des créneaux.
+-- Le public et les admins connectés ne voient que l'état des créneaux.
 drop policy if exists "Public can read AMMA slots" on public.amma_slots;
 create policy "Public can read AMMA slots"
 on public.amma_slots
 for select
-to anon
+to anon, authenticated
 using (true);
 
 -- AUCUNE policy SELECT/INSERT/UPDATE/DELETE sur amma_bookings ni
 -- amma_booking_requests. Les tables contenant les noms/e-mails restent donc
 -- inaccessibles directement depuis le navigateur.
 
--- AUCUNE policy SELECT/INSERT/UPDATE/DELETE sur amma_admins.
 -- AUCUNE policy SELECT/INSERT/UPDATE/DELETE sur amma_admins.
 -- Les autorisations admin passent par des fonctions security definer.
 
@@ -373,9 +372,9 @@ revoke all on function public.admin_list_amma_reservations() from public;
 -- book_amma_slot est conservée pour compatibilité interne, mais n'est plus
 -- exposée aux visiteurs. Les réservations publiques passent désormais par
 -- create_amma_booking_request puis confirm_amma_booking_request.
-grant execute on function public.create_amma_booking_request(bigint, text, text, text) to anon;
-grant execute on function public.confirm_amma_booking_request(uuid) to anon;
-grant execute on function public.cancel_amma_booking(uuid) to anon;
+grant execute on function public.create_amma_booking_request(bigint, text, text, text) to anon, authenticated;
+grant execute on function public.confirm_amma_booking_request(uuid) to anon, authenticated;
+grant execute on function public.cancel_amma_booking(uuid) to anon, authenticated;
 grant execute on function public.is_amma_admin() to authenticated;
 grant execute on function public.admin_list_amma_reservations() to authenticated;
 

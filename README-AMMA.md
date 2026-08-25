@@ -152,39 +152,6 @@ dans Supabase Auth, puis insérer son e-mail dans `amma_admins`.
 
 La modification des créneaux n'est pas encore disponible dans l'interface.
 
-## 6 — Tester avant diffusion
 
-À vérifier :
 
-1. Deux navigateurs affichent le même créneau comme Libre.
-2. Le premier demande le créneau et reçoit un lien de confirmation.
-3. Le créneau reste Libre tant que le lien n'a pas été cliqué.
-4. Le premier clique le lien : le créneau devient Réservé.
-5. Le second tente de confirmer le même créneau : sa réservation est refusée.
-6. Le lien d'annulation libère le créneau.
-7. Un e-mail de confirmation arrive sur l'adresse utilisée.
-8. Aucun nom ni e-mail n'est visible dans les outils réseau lors du chargement
-   de la liste des créneaux.
 
-## Point RGPD
-
-La V1 collecte uniquement prénom, nom, e-mail Inria et créneau.
-
-Il restera à décider d'une durée de conservation et, idéalement, à ajouter une
-suppression automatique des anciennes réservations. Le prototype ne fait
-volontairement pas cette hypothèse à ta place.
-
-## Pour une V2
-
-Les améliorations naturelles seraient :
-
-- page d'administration
-- export CSV
-- e-mail automatique de confirmation
-- création de nouvelles journées depuis l'interface
-- verrouillage à une réservation par adresse e-mail et par journée
-- purge automatique des données après chaque session
-- transformer `supabase/amma.sql` en migrations Supabase dans
-  `supabase/migrations/`
-- ajouter un flow d'invitation admin depuis `/admin/` avec validation explicite
-  par un admin existant
