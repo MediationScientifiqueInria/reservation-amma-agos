@@ -1,12 +1,12 @@
 ---
-title: Gérer les créneaux
-description: Gestion des créneaux AMMA
+title: Gérer les sessions
+description: Gestion des sessions AMMA
 hide:
   - navigation
   - toc
 ---
 
-# Gérer les créneaux
+# Gérer les sessions
 
 <div id="amma-admin-app" class="amma-admin" data-admin-page="slots">
   <section class="amma-admin-login" data-admin-view="login">

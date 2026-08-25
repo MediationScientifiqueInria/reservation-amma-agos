@@ -166,6 +166,6 @@ dans Supabase Auth, puis insérer son e-mail dans `amma_admins`.
 
 Le dashboard `/admin/` sert au suivi des rendez-vous. La gestion des créneaux
 est disponible sur `/admin/slots/`, accessible depuis le bouton `Gérer les
-créneaux`. Cette page permet de créer, modifier, masquer et supprimer les
+sessions`. Cette page permet de créer, modifier, masquer et supprimer les
 sessions. Une suppression ou un changement de date est refusé si la session
 contient déjà des réservations ou des demandes de confirmation actives.

@@ -329,22 +329,23 @@ async function deleteSession(button, sessionDate) {
 }
 
 function renderAdminSummary(sessions, reservations) {
-  const visibleSessions = sessions.filter((session) => session.visible).length;
+  const total = reservations.length;
   const booked = reservations.filter((row) => row.booked).length;
+  const free = total - booked;
   const pending = sessions.reduce((sum, session) => sum + Number(session.pending_requests || 0), 0);
 
   document.getElementById("amma-admin-summary").innerHTML = `
     <div class="amma-admin-stat">
-      <span>${sessions.length}</span>
-      <strong>Sessions</strong>
-    </div>
-    <div class="amma-admin-stat">
-      <span>${visibleSessions}</span>
-      <strong>Visibles</strong>
+      <span>${total}</span>
+      <strong>Créneaux</strong>
     </div>
     <div class="amma-admin-stat">
       <span>${booked}</span>
       <strong>Réservés</strong>
+    </div>
+    <div class="amma-admin-stat">
+      <span>${free}</span>
+      <strong>Libres</strong>
     </div>
     <div class="amma-admin-stat">
       <span>${pending}</span>
