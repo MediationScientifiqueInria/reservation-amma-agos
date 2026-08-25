@@ -31,6 +31,7 @@ extra_css:
 extra_javascript:
   - javascripts/extra.js
   - javascripts/amma.js
+  - javascripts/amma-admin.js
 
 markdown_extensions:
   - admonition
