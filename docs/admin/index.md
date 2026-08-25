@@ -36,11 +36,18 @@ hide:
         <p class="amma-admin-kicker">Connecté</p>
         <p id="amma-admin-user" class="amma-admin-user"></p>
       </div>
+      <a class="amma-primary amma-admin-manage-link" href="slots/">Gérer les créneaux</a>
     </div>
 
     <div id="amma-admin-summary" class="amma-admin-summary"></div>
 
-    <div id="amma-admin-message" class="amma-form-message" aria-live="polite"></div>
-    <div id="amma-admin-table" class="amma-admin-table"></div>
+    <section class="amma-admin-panel" aria-labelledby="amma-admin-reservations-title">
+      <div class="amma-admin-section-header">
+        <h2 id="amma-admin-reservations-title">Rendez-vous</h2>
+      </div>
+
+      <div id="amma-admin-message" class="amma-form-message" aria-live="polite"></div>
+      <div id="amma-admin-table" class="amma-admin-table"></div>
+    </section>
   </section>
 </div>

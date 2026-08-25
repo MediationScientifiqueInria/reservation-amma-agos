@@ -58,10 +58,21 @@ Le script crée :
 - `confirm_amma_booking_request(...)` : réservation atomique au clic
 - `cancel_amma_booking(...)` : annulation sécurisée par token
 - `admin_list_amma_reservations(...)` : lecture admin des créneaux et réservations
+- `admin_list_amma_sessions(...)` : lecture admin des sessions
+- `admin_create_amma_session(...)` : création admin d'une session complète
+- `admin_update_amma_session(...)` : modification admin d'une date de session
+  complète et de sa visibilité
+- `admin_delete_amma_session(...)` : suppression admin d'une session complète
 - `book_amma_slot(...)` : ancienne réservation directe, conservée mais non
   exposée aux visiteurs
 
-La table contenant les noms et e-mails n'est pas lisible par les visiteurs.
+La table contenant les noms et e-mails n'est pas lisible par les visiteurs. Les
+admins ne reçoivent pas non plus d'accès direct `UPDATE` aux tables : les
+modifications passent par des fonctions RPC sécurisées.
+
+Les sessions masquées restent visibles dans l'administration, mais leurs
+créneaux ne sont pas affichés sur la page publique et ne peuvent pas être
+réservés.
 
 ## 3 — Brancher la page sur Supabase
 
@@ -153,5 +164,8 @@ demandes en attente par créneau.
 Pour ajouter d'autres admins, répéter les deux étapes : créer/inviter le compte
 dans Supabase Auth, puis insérer son e-mail dans `amma_admins`.
 
-La modification des créneaux n'est pas encore disponible dans l'interface.
-
+Le dashboard `/admin/` sert au suivi des rendez-vous. La gestion des créneaux
+est disponible sur `/admin/slots/`, accessible depuis le bouton `Gérer les
+créneaux`. Cette page permet de créer, modifier, masquer et supprimer les
+sessions. Une suppression ou un changement de date est refusé si la session
+contient déjà des réservations ou des demandes de confirmation actives.
