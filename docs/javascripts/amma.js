@@ -51,6 +51,7 @@ const AMMA_DEMO_SLOTS = [
 }));
 
 let supabaseClient = null;
+let supabaseLibraryPromise = null;
 let slots = [];
 let selectedSlot = null;
 
@@ -60,6 +61,10 @@ if (app) {
   initAmma();
 }
 
+initAmmaHeaderActions();
+window.refreshAmmaHeaderActions = refreshAmmaHeaderActions;
+window.loadAmmaSupabaseLibrary = loadSupabaseLibrary;
+
 async function initAmma() {
   if (AMMA_DEMO_MODE) {
     slots = structuredClone(AMMA_DEMO_SLOTS);
@@ -68,23 +73,137 @@ async function initAmma() {
   }
 
   await loadSupabaseLibrary();
-  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  getSupabaseClient();
   await refreshSlots();
 }
 
 function loadSupabaseLibrary() {
-  return new Promise((resolve, reject) => {
+  if (supabaseLibraryPromise) return supabaseLibraryPromise;
+
+  supabaseLibraryPromise = new Promise((resolve, reject) => {
     if (window.supabase) {
       resolve();
       return;
     }
 
+    const existingScript = document.querySelector("script[data-amma-supabase]");
+    if (existingScript) {
+      existingScript.addEventListener("load", resolve, { once: true });
+      existingScript.addEventListener(
+        "error",
+        () => reject(new Error("Impossible de charger Supabase.")),
+        { once: true }
+      );
+      return;
+    }
+
     const script = document.createElement("script");
+    script.dataset.ammaSupabase = "true";
     script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
     script.onload = resolve;
     script.onerror = () => reject(new Error("Impossible de charger Supabase."));
     document.head.appendChild(script);
   });
+
+  return supabaseLibraryPromise;
+}
+
+function getSupabaseClient() {
+  if (!supabaseClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+
+  return supabaseClient;
+}
+
+async function initAmmaHeaderActions() {
+  if (AMMA_DEMO_MODE) return;
+  await refreshAmmaHeaderActions();
+}
+
+async function refreshAmmaHeaderActions() {
+  if (AMMA_DEMO_MODE) return;
+
+  const container = getAmmaHeaderActionsContainer();
+  if (!container) return;
+
+  try {
+    await loadSupabaseLibrary();
+    const client = getSupabaseClient();
+    const { data } = await client.auth.getSession();
+    const session = data?.session;
+
+    if (!session) {
+      container.remove();
+      return;
+    }
+
+    const { data: isAdmin, error } = await client.rpc("is_amma_admin");
+    if (error) throw error;
+
+    if (!isAdmin) {
+      container.remove();
+      return;
+    }
+
+    renderAmmaHeaderActions(container);
+  } catch (error) {
+    console.error(error);
+    container.remove();
+  }
+}
+
+function getAmmaHeaderActionsContainer() {
+  const headerInner = document.querySelector(".md-header__inner");
+  if (!headerInner) return null;
+
+  let container = document.getElementById("amma-header-actions");
+  if (!container) {
+    container = document.createElement("nav");
+    container.id = "amma-header-actions";
+    container.className = "amma-header-actions";
+    container.setAttribute("aria-label", "Administration AMMA");
+    headerInner.appendChild(container);
+  }
+
+  return container;
+}
+
+function renderAmmaHeaderActions(container) {
+  container.innerHTML = `
+    <a class="amma-header-link" href="${escapeHtml(getAmmaBaseUrl())}">Accueil</a>
+    <a class="amma-header-link" href="${escapeHtml(getAmmaAdminUrl())}">Admin</a>
+    <button class="amma-header-button" type="button">Déconnexion</button>
+  `;
+
+  container
+    .querySelector(".amma-header-button")
+    ?.addEventListener("click", handleAmmaHeaderLogout);
+}
+
+async function handleAmmaHeaderLogout() {
+  await loadSupabaseLibrary();
+  await getSupabaseClient().auth.signOut();
+
+  if (window.location.pathname.includes("/admin/")) {
+    window.location.href = getAmmaBaseUrl();
+    return;
+  }
+
+  window.location.reload();
+}
+
+function getAmmaAdminUrl() {
+  return `${getAmmaBaseUrl()}admin/`;
+}
+
+function getAmmaBaseUrl() {
+  const script = Array.from(document.scripts).find((item) =>
+    item.src.includes("javascripts/amma.js")
+  );
+  if (!script?.src) return new URL("./", window.location.href).toString();
+
+  return script.src.replace(/javascripts\/amma\.js(?:\?.*)?$/, "");
 }
 
 async function refreshSlots() {

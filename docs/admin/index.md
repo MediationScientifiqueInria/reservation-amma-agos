@@ -2,6 +2,7 @@
 title: Administration
 description: Administration des rendez-vous AMMA
 hide:
+  - navigation
   - toc
 ---
 
@@ -34,10 +35,6 @@ hide:
       <div>
         <p class="amma-admin-kicker">Connecté</p>
         <p id="amma-admin-user" class="amma-admin-user"></p>
-      </div>
-      <div class="amma-admin-actions">
-        <button type="button" class="amma-secondary" id="amma-admin-refresh">Actualiser</button>
-        <button type="button" class="amma-secondary" id="amma-admin-logout">Déconnexion</button>
       </div>
     </div>
 
