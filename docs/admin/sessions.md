@@ -8,7 +8,7 @@ hide:
 
 # Gérer les sessions
 
-<div id="amma-admin-app" class="amma-admin" data-admin-page="slots">
+<div id="amma-admin-app" class="amma-admin" data-admin-page="sessions">
   <section class="amma-admin-login" data-admin-view="login">
     <form id="amma-admin-login-form">
       <h2>Connexion</h2>
@@ -30,7 +30,7 @@ hide:
     </form>
   </section>
 
-  <section class="amma-admin-slots" data-admin-view="slots" hidden>
+  <section class="amma-admin-sessions" data-admin-view="sessions" hidden>
     <div class="amma-admin-toolbar">
       <div>
         <p class="amma-admin-kicker">Connecté</p>

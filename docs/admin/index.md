@@ -36,7 +36,7 @@ hide:
         <p class="amma-admin-kicker">Connecté</p>
         <p id="amma-admin-user" class="amma-admin-user"></p>
       </div>
-      <a class="amma-primary amma-admin-manage-link" href="slots/">Gérer les sessions</a>
+      <a class="amma-primary amma-admin-manage-link" href="sessions/">Gérer les sessions</a>
     </div>
 
     <div id="amma-admin-summary" class="amma-admin-summary"></div>

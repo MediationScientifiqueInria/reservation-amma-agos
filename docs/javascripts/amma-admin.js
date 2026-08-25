@@ -126,8 +126,8 @@ async function showAuthenticatedAdminView(email) {
     await loadDashboardData();
   }
 
-  if (page === "slots") {
-    await loadSlotsAdminData();
+  if (page === "sessions") {
+    await loadSessionsAdminData();
   }
 }
 
@@ -170,8 +170,8 @@ function getAdminPage() {
 }
 
 async function refreshAdminCurrentPage() {
-  if (getAdminPage() === "slots") {
-    await loadSlotsAdminData();
+  if (getAdminPage() === "sessions") {
+    await loadSessionsAdminData();
     return;
   }
 
@@ -198,7 +198,7 @@ async function loadDashboardData() {
   }
 }
 
-async function loadSlotsAdminData() {
+async function loadSessionsAdminData() {
   const message = document.getElementById("amma-admin-session-message");
 
   setAdminText("amma-admin-session-message", "Chargement des créneaux…");
