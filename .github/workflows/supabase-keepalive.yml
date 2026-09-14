@@ -1,0 +1,36 @@
+name: Keep Supabase project active
+
+on:
+  schedule:
+    # Runs every day at 08:15 Paris time during winter, 09:15 during summer.
+    - cron: "15 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: "https://muzyvmdswsccrvntgann.supabase.co"
+      SUPABASE_ANON_KEY: "sb_publishable_ZqKhjZqSUBDygROcyc0EHw_ZRDDQIRQ"
+
+    steps:
+      - name: Query a public table
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in 1 2 3; do
+            curl --fail --silent --show-error --get \
+              "${SUPABASE_URL}/rest/v1/amma_slots" \
+              --data-urlencode "select=id" \
+              --data-urlencode "limit=1" \
+              --header "apikey: ${SUPABASE_ANON_KEY}" \
+              --header "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              --header "Accept: application/json" \
+              --output /dev/null
+
+            sleep 5
+          done

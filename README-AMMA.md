@@ -169,3 +169,23 @@ est disponible sur `/admin/sessions/`, accessible depuis le bouton `Gérer les
 sessions`. Cette page permet de créer, modifier, masquer et supprimer les
 sessions. Une suppression ou un changement de date est refusé si la session
 contient déjà des réservations ou des demandes de confirmation actives.
+
+## 6 — Garder le projet Supabase actif
+
+Le dépôt contient une GitHub Action :
+
+`.github/workflows/supabase-keepalive.yml`
+
+Elle exécute chaque jour quelques requêtes de lecture très légères sur la table
+publique `amma_slots`, afin de générer une activité base de données et de limiter
+le risque de pause automatique du projet Supabase Free.
+
+Après avoir poussé la branche sur GitHub, ouvrir l'onglet **Actions**, choisir
+**Keep Supabase project active**, puis lancer **Run workflow** une première fois
+pour vérifier que la requête passe bien. La planification quotidienne prendra
+ensuite le relais.
+
+Supabase indique que les projets Free peuvent être mis en pause après une faible
+activité sur 7 jours. Cette action aide pour un petit projet peu fréquenté, mais
+le seul moyen garanti d'éviter toute pause reste de passer le projet sur une
+organisation payante.
